@@ -1,18 +1,15 @@
 package shigaleva.av.task_check_solve_example
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.os.SystemClock
-import android.view.Gravity
 import android.widget.Button
-import android.widget.EditText
 import android.widget.GridLayout
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import kotlin.math.floor
 
 import kotlin.math.max
 import kotlin.math.min
@@ -36,6 +33,9 @@ class MainActivity : AppCompatActivity() {
     private var maxTime: Long = 0
     private var averageTime: Long = 0
 
+    private var visibleBtnStart = true
+    private var visibleBtnCheck = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //enableEdgeToEdge()
@@ -53,9 +53,11 @@ class MainActivity : AppCompatActivity() {
 
         //нажатие кнопки "старт"
         btnStart.setOnClickListener {
-            it.isEnabled = false
-            btnRight.isEnabled = true
-            btnWrong.isEnabled = true
+            visibleBtnStart = false
+            it.isEnabled = visibleBtnStart
+            visibleBtnCheck = true
+            btnRight.isEnabled = visibleBtnCheck
+            btnWrong.isEnabled = visibleBtnCheck
             startTime = SystemClock.elapsedRealtime()
             gridExampleArea.setBackgroundColor(Color.TRANSPARENT)
             backgroundResult = 0
@@ -165,13 +167,17 @@ class MainActivity : AppCompatActivity() {
             backgroundResult = 2
         }
 
-        btnStart.isEnabled = true
-        btnRight.isEnabled = false
-        btnWrong.isEnabled = false
+        visibleBtnStart = true
+        visibleBtnCheck = false
+
+        btnStart.isEnabled = visibleBtnStart
+        btnRight.isEnabled = visibleBtnCheck
+        btnWrong.isEnabled = visibleBtnCheck
         updateDataInElement()
     }
 
     //функция обновления данных в элементах активити
+    @SuppressLint("SetTextI18n")
     private fun updateDataInElement() {
         val txtViewCountExample = findViewById<TextView>(R.id.txtView_count_example)
         val txtViewCountRightAnswer = findViewById<TextView>(R.id.txtView_count_right)
@@ -189,6 +195,14 @@ class MainActivity : AppCompatActivity() {
         val txtViewMaxTime = findViewById<TextView>(R.id.txtView_max_time)
         val txtViewMinTime = findViewById<TextView>(R.id.txtView_min_time)
         val txtViewAverageTime = findViewById<TextView>(R.id.txtView_average_time)
+
+        val btnStart = findViewById<Button>(R.id.btn_start)
+        val btnRight = findViewById<Button>(R.id.btn_right)
+        val btnWrong = findViewById<Button>(R.id.btn_wrong)
+
+        btnStart.isEnabled = visibleBtnStart
+        btnWrong.isEnabled = visibleBtnCheck
+        btnRight.isEnabled = visibleBtnCheck
 
         txtViewCountExample.text = "$countAnswers"
         txtViewCountRightAnswer.text = "$countRightAnswers"
@@ -227,6 +241,8 @@ class MainActivity : AppCompatActivity() {
         instanceState.putLong("maxTime", maxTime)
         instanceState.putLong("minTime", minTime)
         instanceState.putLong("averageTime", averageTime)
+        instanceState.putBoolean("visibleBtnStart", visibleBtnStart)
+        instanceState.putBoolean("visibleBtnCheck", visibleBtnCheck)
     }
 
     //использование сохраненных значений переменных
@@ -243,6 +259,8 @@ class MainActivity : AppCompatActivity() {
         maxTime = savedInstanceState.getLong("maxTime")
         minTime = savedInstanceState.getLong("minTime")
         averageTime = savedInstanceState.getLong("averageTime")
+        visibleBtnStart = savedInstanceState.getBoolean("visibleBtnStart")
+        visibleBtnCheck = savedInstanceState.getBoolean("visibleBtnCheck")
         updateDataInElement()
     }
 }
